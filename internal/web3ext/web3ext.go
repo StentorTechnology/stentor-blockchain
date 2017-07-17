@@ -28,7 +28,7 @@ var Modules = map[string]string{
 	"miner":      Miner_JS,
 	"net":        Net_JS,
 	"personal":   Personal_JS,
-	"quorum":     Quorum_JS,
+	"stentor":    Stentor_JS,
 	"rpc":        RPC_JS,
 	"shh":        Shh_JS,
 	"txpool":     TxPool_JS,
@@ -683,51 +683,51 @@ web3._extend({
 });
 `
 
-const Quorum_JS = `
+const Stentor_JS = `
 web3._extend({
-	property: 'quorum',
+	property: 'stentor',
 	methods: [
 		new web3._extend.Method({
 			name: 'canonicalHash',
-			call: 'quorum_canonicalHash',
+			call: 'stentor_canonicalHash',
 			params: 1,
 			inputFormatter: [null]
 		}),
 		new web3._extend.Method({
 			name: 'vote',
-			call: 'quorum_vote',
+			call: 'stentor_vote',
 			params: 1
 		}),
 		new web3._extend.Method({
 			name: 'makeBlock',
-			call: 'quorum_makeBlock'
+			call: 'stentor_makeBlock'
 		}),
 		new web3._extend.Method({
 			name: 'isVoter',
-			call: 'quorum_isVoter',
+			call: 'stentor_isVoter',
 			params: 1,
 			inputFormatter: [web3._extend.formatters.inputAddressFormatter]
 		}),
 		new web3._extend.Method({
 			name: 'isBlockMaker',
-			call: 'quorum_isBlockMaker',
+			call: 'stentor_isBlockMaker',
 			params: 1,
 			inputFormatter: [web3._extend.formatters.inputAddressFormatter]
 		}),
 		new web3._extend.Method({
 			name: 'pauseBlockMaker',
-			call: 'quorum_pauseBlockMaker'
+			call: 'stentor_pauseBlockMaker'
 		}),
 		new web3._extend.Method({
 			name: 'resumeBlockMaker',
-			call: 'quorum_resumeBlockMaker'
+			call: 'stentor_resumeBlockMaker'
 		})
 	],
 	properties:
 	[
 		new web3._extend.Property({
 			name: 'nodeInfo',
-			getter: 'quorum_nodeInfo'
+			getter: 'stentor_nodeInfo'
 		}),
 	]
 });

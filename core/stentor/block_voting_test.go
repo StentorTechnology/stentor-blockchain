@@ -1,4 +1,4 @@
-package quorum_test
+package stentor_test
 
 import (
 	"fmt"

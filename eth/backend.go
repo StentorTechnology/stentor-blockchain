@@ -33,7 +33,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/httpclient"
 	"github.com/ethereum/go-ethereum/common/registrar/ethreg"
 	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/core/quorum"
+	"github.com/ethereum/go-ethereum/core/stentor"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/ethereum/go-ethereum/eth/downloader"
@@ -127,10 +127,10 @@ type Ethereum struct {
 	netVersionId  int
 	netRPCService *ethapi.PublicNetAPI
 
-	blockVoting      *quorum.BlockVoting
+	blockVoting      *stentor.BlockVoting
 	voteMinBlockTime uint
 	voteMaxBlockTime uint
-	blockMakerStrat  quorum.BlockMakerStrategy
+	blockMakerStrat  stentor.BlockMakerStrategy
 }
 
 // New creates a new Ethereum object (including the
@@ -228,7 +228,7 @@ func New(ctx *node.ServiceContext, config *Config) (*Ethereum, error) {
 
 	eth.apiBackend = &EthApiBackend{eth}
 
-	eth.blockVoting = quorum.NewBlockVoting(eth.blockchain, eth.chainConfig, eth.txPool, eth.eventMux, eth.chainDb, eth.accountManager, config.SingleBlockMaker)
+	eth.blockVoting = stentor.NewBlockVoting(eth.blockchain, eth.chainConfig, eth.txPool, eth.eventMux, eth.chainDb, eth.accountManager, config.SingleBlockMaker)
 
 	return eth, nil
 }
@@ -323,9 +323,9 @@ func (s *Ethereum) APIs() []rpc.API {
 			Service:   ethreg.NewPrivateRegistarAPI(s.chainConfig, s.blockchain, s.chainDb, s.txPool, s.accountManager),
 		},
 		{
-			Namespace: "quorum",
+			Namespace: "stentor",
 			Version:   "1.0",
-			Service:   quorum.NewPublicQuorumAPI(s.blockVoting),
+			Service:   stentor.NewPublicQuorumAPI(s.blockVoting),
 		},
 	}...)
 }

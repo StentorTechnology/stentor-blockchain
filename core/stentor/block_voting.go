@@ -1,4 +1,4 @@
-package quorum
+package stentor
 
 import (
 	"crypto/ecdsa"
