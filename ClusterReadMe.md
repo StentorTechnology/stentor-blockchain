@@ -7,7 +7,7 @@ Done:
 - CoreRegistry contract done and binding done
 - CoreCluster contract done and binding done
 - There is an example of how to deploy a cluster in the test file (auth.go of binding is commented out so main.go in test does
-  not work currently)
+  not work currently. It is commented out to avoid circular dependency for CoreKeyStore contract binding.)
 - Changed many of the files in the accounts package but cache and account_manager still needs to be fixed
 
 TODO:
