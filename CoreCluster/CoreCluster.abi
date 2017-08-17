@@ -1,0 +1,2 @@
+[{"constant":true,"inputs":[],"name":"getName","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"newAddress","type":"address"}],"name":"updateAddress","outputs":[],"payable":false,"type":"function"},{"inputs":[{"name":"_name","type":"string"}],"payable":false,"type":"constructor"},{"payable":true,"type":"fallback"}]
+

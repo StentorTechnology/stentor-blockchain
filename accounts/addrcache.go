@@ -16,7 +16,7 @@
 
 package accounts
 
-import (
+/*import (
 	"bufio"
 	"encoding/json"
 	"fmt"
@@ -267,3 +267,4 @@ func skipKeyFile(fi os.FileInfo) bool {
 	}
 	return false
 }
+*/

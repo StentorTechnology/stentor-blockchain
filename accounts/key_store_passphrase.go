@@ -32,8 +32,12 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"path/filepath"
+	"log"
+	//"io/ioutil"
+	//"path/filepath"
+
+	"github.com/ethereum/go-ethereum/accounts/CoreKeyStore"
+	"github.com/ethereum/go-ethereum/ethclient"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -59,18 +63,29 @@ const (
 )
 
 type keyStorePassphrase struct {
-	keysDirPath string
+	//keysDirPath string
 	scryptN     int
 	scryptP     int
 }
-
-func (ks keyStorePassphrase) GetKey(addr common.Address, filename, auth string) (*Key, error) {
+//keystore change
+func (ks keyStorePassphrase) GetKey(addr, cluster common.Address, auth string) (*Key, error) {
+	// Create an IPC based RPC connection to a remote node
+	conn, err := ethclient.Dial("/home/kyne/Desktop/stentor-examples/core-cluster-boot/nodes/node/geth.ipc")
+	if err != nil {
+		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
+	}
+	// Instantiate the contract and display its name
+	keystore, err := CoreKeyStore.NewKeyStore(common.HexToAddress("0xc4358d1484f3aee49ae6ae2bc231126aed0aaa7f"), conn)
+	if err != nil {
+		log.Fatalf("Failed to instantiate a Token contract: %v", err)
+	}
+	
 	// Load the key from the keystore and decrypt its contents
-	keyjson, err := ioutil.ReadFile(filename)
+	keyjson, err := keystore.GetKey(nil, addr, cluster)//ioutil.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}
-	key, err := DecryptKey(keyjson, auth)
+	key, err := DecryptKey([]byte(keyjson), auth)
 	if err != nil {
 		return nil, err
 	}
@@ -81,14 +96,14 @@ func (ks keyStorePassphrase) GetKey(addr common.Address, filename, auth string) 
 	return key, nil
 }
 
-func (ks keyStorePassphrase) StoreKey(filename string, key *Key, auth string) error {
+func (ks keyStorePassphrase) StoreKey(account, cluster common.Address, key *Key, auth string) error {
 	keyjson, err := EncryptKey(key, auth, ks.scryptN, ks.scryptP)
 	if err != nil {
 		return err
 	}
-	return writeKeyFile(filename, keyjson)
+	return writeKeyFile(account, cluster, keyjson)
 }
-
+/*
 func (ks keyStorePassphrase) JoinPath(filename string) string {
 	if filepath.IsAbs(filename) {
 		return filename
@@ -96,7 +111,7 @@ func (ks keyStorePassphrase) JoinPath(filename string) string {
 		return filepath.Join(ks.keysDirPath, filename)
 	}
 }
-
+*/
 // EncryptKey encrypts a key using the specified scrypt parameters into a json
 // blob that can be decrypted later on.
 func EncryptKey(key *Key, auth string, scryptN, scryptP int) ([]byte, error) {

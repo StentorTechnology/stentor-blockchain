@@ -16,7 +16,7 @@
 
 package bind
 
-import (
+/*import (
 	"crypto/ecdsa"
 	"errors"
 	"io"
@@ -63,3 +63,4 @@ func NewKeyedTransactor(key *ecdsa.PrivateKey) *TransactOpts {
 		GasPrice: new(big.Int),
 	}
 }
+*/

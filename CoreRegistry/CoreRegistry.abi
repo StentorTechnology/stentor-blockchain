@@ -1,0 +1,2 @@
+[{"constant":false,"inputs":[{"name":"newCluster","type":"address"},{"name":"name","type":"string"}],"name":"register","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"name","type":"string"},{"name":"newaddress","type":"address"}],"name":"updateAddress","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"name","type":"string"}],"name":"getCluster","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"}]
+

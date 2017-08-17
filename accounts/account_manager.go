@@ -21,6 +21,14 @@
 package accounts
 
 import (
+	"errors"
+	"crypto/ecdsa"
+
+	"github.com/ethereum/go-ethereum/common"
+)
+
+/*
+import (
 	"crypto/ecdsa"
 	crand "crypto/rand"
 	"encoding/json"
@@ -35,7 +43,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 )
-
+*/
 var (
 	ErrLocked  = errors.New("account is locked")
 	ErrNoMatch = errors.New("no key for given address or file")
@@ -46,14 +54,14 @@ var (
 // When used as an argument, it selects a unique key file to act on.
 type Account struct {
 	Address common.Address // Ethereum account address derived from the key
-
+	Cluster common.Address
 	// File contains the key file name.
 	// When Acccount is used as an argument to select a key, File can be left blank to
 	// select just by address or set to the basename or absolute path of a file in the key
 	// directory. Accounts returned by Manager will always contain an absolute path.
-	File string
+	//File string
 }
-
+/*
 func (acc *Account) MarshalJSON() ([]byte, error) {
 	return []byte(`"` + acc.Address.Hex() + `"`), nil
 }
@@ -76,10 +84,10 @@ type unlocked struct {
 }
 
 // NewManager creates a manager for the given directory.
-func NewManager(keydir string, scryptN, scryptP int) *Manager {
-	keydir, _ = filepath.Abs(keydir)
-	am := &Manager{keyStore: &keyStorePassphrase{keydir, scryptN, scryptP}}
-	am.init(keydir)
+func NewManager(scryptN, scryptP int) *Manager {
+	//keydir, _ = filepath.Abs(keydir)
+	am := &Manager{keyStore: &keyStorePassphrase{scryptN, scryptP}}
+	//am.init(keydir)
 	return am
 }
 
@@ -358,7 +366,7 @@ func (am *Manager) ImportPreSaleKey(keyJSON []byte, passphrase string) (Account,
 	am.cache.add(a)
 	return a, nil
 }
-
+*/
 // zeroKey zeroes a private key in memory.
 func zeroKey(k *ecdsa.PrivateKey) {
 	b := k.D.Bits()

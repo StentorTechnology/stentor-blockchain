@@ -17,7 +17,7 @@
 // +build darwin,!ios freebsd linux,!arm64 netbsd solaris windows
 
 package accounts
-
+/*
 import (
 	"time"
 
@@ -111,3 +111,4 @@ func (w *watcher) loop() {
 		}
 	}
 }
+*/

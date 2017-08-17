@@ -23,11 +23,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
-	"os"
-	"path/filepath"
+	//"io/ioutil"
+	//"os"
+	//"path/filepath"
 	"strings"
 	"time"
+	"log"
+
+	"github.com/ethereum/go-ethereum/accounts/CoreKeyStore"
+	"github.com/ethereum/go-ethereum/CoreRegistry"
+	"github.com/ethereum/go-ethereum/ethclient"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -47,14 +52,14 @@ type Key struct {
 	// privkey in this struct is always in plaintext
 	PrivateKey *ecdsa.PrivateKey
 }
-
+//keystore change
 type keyStore interface {
 	// Loads and decrypts the key from disk.
-	GetKey(addr common.Address, filename string, auth string) (*Key, error)
+	GetKey(account, cluster common.Address, auth string) (*Key, error)
 	// Writes and encrypts the key.
-	StoreKey(filename string, k *Key, auth string) error
+	StoreKey(account, cluster common.Address, k *Key, auth string) error
 	// Joins filename with the key directory unless it is already absolute.
-	JoinPath(filename string) string
+	//JoinPath(filename string) string
 }
 
 type plainKeyJSON struct {
@@ -176,23 +181,40 @@ func newKey(rand io.Reader) (*Key, error) {
 }
 
 func storeNewKey(ks keyStore, rand io.Reader, auth string) (*Key, Account, error) {
+	// Create an IPC based RPC connection to a remote node
+	conn, err := ethclient.Dial("/home/kyne/Desktop/stentor-examples/core-cluster-boot/nodes/node/geth.ipc")
+	if err != nil {
+		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
+	}
+	// Instantiate the contract and display its name
+	registrar, err := CoreRegistry.NewRegistrar(common.HexToAddress("0xf683b6c648d0999b7725330adb4d4e5ea3d48499"), conn)
+	if err != nil {
+		log.Fatalf("Failed to instantiate a Token contract: %v", err)
+	}
+	
 	key, err := newKey(rand)
 	if err != nil {
 		return nil, Account{}, err
 	}
-	a := Account{Address: key.Address, File: ks.JoinPath(keyFileName(key.Address))}
-	if err := ks.StoreKey(a.File, key, auth); err != nil {
+
+	cluster, err := registrar.GetCluster(nil, "test_cluster_1")
+	if err != nil {
+		return nil, Account{}, err
+	}
+
+	a := Account{Address: key.Address, Cluster: cluster}
+	if err := ks.StoreKey(key.Address, a.Cluster, key, auth); err != nil {
 		zeroKey(key.PrivateKey)
 		return nil, a, err
 	}
 	return key, a, err
 }
 
-func writeKeyFile(file string, content []byte) error {
+func writeKeyFile(account, cluster common.Address, content []byte) error {
 	// Create the keystore directory with appropriate permissions
 	// in case it is not present yet.
-	const dirPerm = 0700
-	if err := os.MkdirAll(filepath.Dir(file), dirPerm); err != nil {
+	//const dirPerm = 0700
+	/*if err := os.MkdirAll(filepath.Dir(file), dirPerm); err != nil {
 		return err
 	}
 	// Atomic write: create a temporary hidden file first
@@ -207,7 +229,24 @@ func writeKeyFile(file string, content []byte) error {
 		return err
 	}
 	f.Close()
-	return os.Rename(f.Name(), file)
+	return os.Rename(f.Name(), file)*/
+	conn, err := ethclient.Dial("/home/kyne/Desktop/stentor-examples/core-cluster-boot/nodes/node/geth.ipc")
+	if err != nil {
+		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
+	}
+	// Instantiate the contract and display its name
+	keystore, err := CoreKeyStore.NewKeyStore(common.HexToAddress("0xc4358d1484f3aee49ae6ae2bc231126aed0aaa7f"), conn)
+	if err != nil {
+		log.Fatalf("Failed to instantiate a Token contract: %v", err)
+	}
+	n := bytes.Index(content, []byte{0})
+	sContent := string(content[:n])
+	t, err := keystore.StoreKey(nil, account, cluster, sContent)
+	if(err != nil){
+		return err
+	}
+	fmt.Println(t)
+	return nil
 }
 
 // keyFileName implements the naming convention for keyfiles:
